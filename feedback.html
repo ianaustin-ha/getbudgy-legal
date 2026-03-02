@@ -149,16 +149,15 @@
     <h1>Share your feedback</h1>
     <p class="page-sub">Found a bug, have an idea, or just want to say hi? We read everything and appreciate every message.</p>
 
-    <form name="feedback" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks.html">
-      <!-- Netlify bot field -->
-      <input type="hidden" name="form-name" value="feedback" />
-      <p style="display:none;"><label>Don't fill this out: <input name="bot-field" /></label></p>
+    <form method="POST" action="/api/feedback">
+  <!-- Honeypot (spam protection) -->
+      <input name="company" type="text" autocomplete="off" tabindex="-1" style="display:none">
 
       <div class="form-group">
         <label>Type of feedback</label>
         <div class="type-grid">
           <label class="type-btn">
-            <input type="radio" name="type" value="Bug Report" />
+            <input type="radio" name="type" value="Bug Report" required />
             <span class="type-icon">🐛</span>
             Bug Report
           </label>
