@@ -45,7 +45,7 @@
 
     .form-group { margin-bottom: 1.5rem; }
     label { display: block; font-size: 0.85rem; font-weight: 500; color: #c8c7d4; margin-bottom: 0.5rem; }
-    input, textarea, select {
+    input, textarea {
       width: 100%;
       background: var(--surface);
       border: 1px solid var(--border2);
@@ -59,12 +59,11 @@
       transition: border-color 0.2s, box-shadow 0.2s;
       -webkit-appearance: none;
     }
-    input:focus, textarea:focus, select:focus {
+    input:focus, textarea:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(124,106,247,0.15);
     }
     textarea { min-height: 140px; resize: vertical; }
-    select option { background: var(--surface); }
 
     .type-grid {
       display: grid;
@@ -82,12 +81,12 @@
       transition: all 0.2s;
       font-size: 0.85rem;
       color: var(--muted);
+      user-select: none;
     }
 
     .type-btn input[type="radio"] { display: none; }
 
-    .type-btn:has(input:checked),
-    .type-btn.active {
+    .type-btn:has(input:checked) {
       border-color: var(--accent);
       background: rgba(124,106,247,0.1);
       color: var(--accent2);
@@ -124,24 +123,29 @@
     <a class="nav-logo" href="/">Budgy</a>
     <ul class="nav-links">
       <li><a href="/#features">Features</a></li>
-      <li><a href="feedback.html">Feedback</a></li>
-      <li><a href="privacy.html">Privacy</a></li>
-      <li><a href="terms.html">Terms</a></li>
+      <li><a href="/feedback/">Feedback</a></li>
+      <li><a href="/privacy/">Privacy</a></li>
+      <li><a href="/terms/">Terms</a></li>
     </ul>
     <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
       <span></span><span></span><span></span>
     </button>
   </nav>
+
   <div class="nav-mobile" id="nav-mobile">
     <a href="/#features">Features</a>
-    <a href="feedback.html">Feedback</a>
-    <a href="privacy.html">Privacy</a>
-    <a href="terms.html">Terms</a>
+    <a href="/feedback/">Feedback</a>
+    <a href="/privacy/">Privacy</a>
+    <a href="/terms/">Terms</a>
   </div>
+
   <script>
     const btn = document.getElementById('hamburger');
     const menu = document.getElementById('nav-mobile');
-    btn.addEventListener('click', () => { btn.classList.toggle('open'); menu.classList.toggle('open'); });
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('open');
+      menu.classList.toggle('open');
+    });
   </script>
 
   <div class="page-wrap">
@@ -150,7 +154,7 @@
     <p class="page-sub">Found a bug, have an idea, or just want to say hi? We read everything and appreciate every message.</p>
 
     <form method="POST" action="/api/feedback">
-  <!-- Honeypot (spam protection) -->
+      <!-- Honeypot (spam protection) -->
       <input name="company" type="text" autocomplete="off" tabindex="-1" style="display:none">
 
       <div class="form-group">
@@ -195,7 +199,12 @@
   </div>
 
   <footer>
-    <p><a href="/">Budgy</a> &nbsp;·&nbsp; <a href="privacy.html">Privacy</a> &nbsp;·&nbsp; <a href="terms.html">Terms</a> &nbsp;·&nbsp; <a href="feedback.html">Feedback</a></p>
+    <p>
+      <a href="/">Budgy</a> &nbsp;·&nbsp;
+      <a href="/privacy/">Privacy</a> &nbsp;·&nbsp;
+      <a href="/terms/">Terms</a> &nbsp;·&nbsp;
+      <a href="/feedback/">Feedback</a>
+    </p>
   </footer>
 </body>
 </html>
