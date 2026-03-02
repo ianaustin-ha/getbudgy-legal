@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Budgy</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #16161f;
+      --border: rgba(255,255,255,0.07);
+      --text: #f0eff5;
+      --muted: #7a7990;
+      --accent: #7c6af7;
+      --accent2: #a594f9;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2rem;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      background: none;
+      border: none;
+    }
+
+    .nav-hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.25s;
+    }
+
+    .nav-mobile {
+      display: none;
+      position: fixed;
+      top: 61px; left: 0; right: 0;
+      background: rgba(10,10,15,0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem 2rem;
+      z-index: 99;
+      flex-direction: column;
+    }
+
+    .nav-mobile.open { display: flex; }
+
+    .nav-mobile a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 1.1rem;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+
+    /* PAGE CONTENT */
+    .page-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 8rem 2rem 5rem;
+    }
+
+    .page-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 0.75rem;
+    }
+
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.75rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .updated {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 3rem;
+    }
+
+    h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      margin: 2.5rem 0 0.75rem;
+    }
+
+    p {
+      color: #c8c7d4;
+      font-weight: 300;
+      margin-bottom: 1rem;
+    }
+
+    ul {
+      color: #c8c7d4;
+      font-weight: 300;
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    ul li { margin-bottom: 0.4rem; }
+
+    a { color: var(--accent2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .highlight-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin: 2rem 0;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+
+    footer a { color: var(--muted); }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a class="nav-logo" href="/">Budgy</a>
+
+    <ul class="nav-links">
+      <li><a href="/#features">Features</a></li>
+      <li><a href="/feedback">Feedback</a></li>
+      <li><a href="/privacy">Privacy</a></li>
+      <li><a href="/terms">Terms</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="page-label">Legal</div>
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: February 22, 2026</p>
+
+    <div class="highlight-box">
+      <p><strong>Budgy is built with privacy at its core.</strong> We do not collect, sell, or share your personal or financial data. Your information stays on your device and your private iCloud account.</p>
+    </div>
+
+    <h2>1. Information We Collect</h2>
+    <p>We do not collect any personal information through the Budgy app. The app does not require account creation and does not transmit your financial data to us.</p>
+
+    <h2>2. Data Storage</h2>
+    <p>All data you enter into Budgy is stored locally on your device using Apple’s SwiftData framework. If iCloud Sync is enabled, your data is stored in your personal iCloud account via CloudKit.</p>
+
+    <h2>3. iCloud</h2>
+    <p>If you enable iCloud Sync, your data is subject to Apple’s privacy policies. We do not have access to your iCloud data.</p>
+
+    <h2>4. Analytics & Tracking</h2>
+    <p>Budgy does not include analytics SDKs, advertising frameworks, tracking pixels, or third-party monitoring tools.</p>
+
+    <h2>5. In-App Purchases</h2>
+    <p>All purchases are processed securely by Apple through the App Store. We do not receive or store payment information.</p>
+
+    <h2>6. Contact & Feedback</h2>
+    <p>If you contact us via email or our <a href="/feedback">feedback form</a>, we may receive your name and email address solely to respond to your inquiry.</p>
+
+    <h2>7. Changes</h2>
+    <p>We may update this Privacy Policy from time to time. Updates will be reflected in the “Last updated” date above.</p>
+
+    <h2>8. Contact</h2>
+    <p>If you have any questions, contact us at <a href="mailto:hello@getbudgy.app">hello@getbudgy.app</a>.</p>
+  </div>
+
+  <footer>
+    <p>
+      <a href="/">Budgy</a> ·
+      <a href="/privacy">Privacy</a> ·
+      <a href="/terms">Terms</a> ·
+      <a href="/feedback">Feedback</a>
+    </p>
+    <p>&copy; 2026 Budgy. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
