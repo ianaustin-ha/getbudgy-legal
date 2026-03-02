@@ -1,8 +1,14 @@
+// functions/api/feedback.js
+
 export async function onRequestPost({ request, env }) {
   const ct = request.headers.get("content-type") || "";
 
+  // Accept standard HTML form posts
   let form;
-  if (ct.includes("application/x-www-form-urlencoded") || ct.includes("multipart/form-data")) {
+  if (
+    ct.includes("application/x-www-form-urlencoded") ||
+    ct.includes("multipart/form-data")
+  ) {
     form = await request.formData();
   } else {
     return new Response("Unsupported content type", { status: 415 });
@@ -13,13 +19,15 @@ export async function onRequestPost({ request, env }) {
   const email = (form.get("email") || "").toString().slice(0, 200);
   const message = (form.get("message") || "").toString().slice(0, 5000);
 
-  // Honeypot (add <input name="company" ...> hidden in HTML)
+  // Honeypot (hidden field in HTML named "company")
   const company = (form.get("company") || "").toString();
   if (company.trim().length) {
     return Response.redirect(new URL("/thanks.html", request.url).toString(), 303);
   }
 
-  if (!message.trim()) return new Response("Message required", { status: 400 });
+  if (!message.trim()) {
+    return new Response("Message required", { status: 400 });
+  }
 
   if (!env.MC_API_KEY || !env.FEEDBACK_TO_EMAIL || !env.FEEDBACK_FROM_EMAIL) {
     return new Response("Server not configured", { status: 500 });
@@ -30,8 +38,7 @@ export async function onRequestPost({ request, env }) {
   const now = new Date().toISOString();
 
   const subject = `Budgy Feedback: ${type}`;
-  const text =
-`New Budgy feedback
+  const text = `New Budgy feedback
 
 Type: ${type}
 Name: ${name || "(not provided)"}
@@ -48,14 +55,19 @@ UA: ${ua}
 
   // MailChannels Email API payload
   const payload = {
-    personalizations: [
-      { to: [{ email: env.FEEDBACK_TO_EMAIL }] }
-    ],
-    from: { email: env.FEEDBACK_FROM_EMAIL, name: env.FEEDBACK_FROM_NAME || "Budgy Feedback" },
-    reply_to: email ? { email } : undefined,
+    personalizations: [{ to: [{ email: env.FEEDBACK_TO_EMAIL }] }],
+    from: {
+      email: env.FEEDBACK_FROM_EMAIL,
+      name: env.FEEDBACK_FROM_NAME || "Budgy Feedback",
+    },
     subject,
     content: [{ type: "text/plain", value: text }],
   };
+
+  // Only set reply_to if user provided an email
+  if (email && email.includes("@")) {
+    payload.reply_to = { email };
+  }
 
   const res = await fetch("https://api.mailchannels.net/tx/v1/send", {
     method: "POST",
