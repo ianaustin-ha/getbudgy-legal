@@ -3,7 +3,6 @@
 export async function onRequest(context) {
   const { request } = context;
 
-  // ✅ Quick healthcheck
   if (request.method === "GET") {
     return new Response("OK: /api/feedback is live. Send POST from the form.", {
       status: 200,
@@ -33,16 +32,15 @@ async function handlePost({ request, env }) {
   const email = (form.get("email") || "").toString().slice(0, 200);
   const message = (form.get("message") || "").toString().slice(0, 5000);
 
-  // Honeypot (spam protection)
+  // Honeypot
   const company = (form.get("company") || "").toString();
   if (company.trim().length) {
-    return Response.redirect(new URL("/thanks", request.url).toString(), 303);
+    return Response.redirect(new URL("/thanks/", request.url).toString(), 303);
   }
 
   if (!message.trim()) return new Response("Message required", { status: 400 });
 
-  // ✅ Only require what you actually configured in Cloudflare
-  if (!env.FEEDBACK_TO_EMAIL || !env.FEEDBACK_FROM_EMAIL) {
+  if (!env.RESEND_API_KEY || !env.FEEDBACK_TO_EMAIL || !env.FEEDBACK_FROM_EMAIL) {
     return new Response("Server not configured", { status: 500 });
   }
 
@@ -51,6 +49,7 @@ async function handlePost({ request, env }) {
   const now = new Date().toISOString();
 
   const subject = `Budgy Feedback: ${type}`;
+
   const text = `New Budgy feedback
 
 Type: ${type}
@@ -67,23 +66,18 @@ UA: ${ua}
 `;
 
   const payload = {
-    personalizations: [{ to: [{ email: env.FEEDBACK_TO_EMAIL }] }],
-    from: {
-      email: env.FEEDBACK_FROM_EMAIL,
-      name: env.FEEDBACK_FROM_NAME || "Budgy Feedback",
-    },
+    from: `Budgy Feedback <${env.FEEDBACK_FROM_EMAIL}>`,
+    to: [env.FEEDBACK_TO_EMAIL],
     subject,
-    content: [{ type: "text/plain", value: text }],
+    text,
+    reply_to: email && email.includes("@") ? email : undefined,
   };
 
-  if (email && email.includes("@")) {
-    payload.reply_to = { email };
-  }
-
-  const res = await fetch("https://api.mailchannels.net/tx/v1/send", {
+  const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       "content-type": "application/json",
+      authorization: `Bearer ${env.RESEND_API_KEY}`,
     },
     body: JSON.stringify(payload),
   });
@@ -93,5 +87,5 @@ UA: ${ua}
     return new Response(`Email send failed: ${res.status}\n${err}`, { status: 502 });
   }
 
-  return Response.redirect(new URL("/thanks", request.url).toString(), 303);
+  return Response.redirect(new URL("/thanks/", request.url).toString(), 303);
 }
