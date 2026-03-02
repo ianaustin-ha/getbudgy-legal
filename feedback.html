@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedback — Budgy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0f; --surface: #16161f; --surface2: #1d1d28;
+      --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
+      --text: #f0eff5; --muted: #7a7990; --accent: #7c6af7; --accent2: #a594f9;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 2rem;
+      background: rgba(10,10,15,0.85); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: var(--text); text-decoration: none; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.25s; transform-origin: center; }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .nav-mobile { display: none; position: fixed; top: 61px; left: 0; right: 0; background: rgba(10,10,15,0.97); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 1.5rem 2rem 2rem; z-index: 99; flex-direction: column; }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a { color: var(--muted); text-decoration: none; font-size: 1.1rem; padding: 0.9rem 0; border-bottom: 1px solid var(--border); transition: color 0.2s; }
+    .nav-mobile a:last-child { border-bottom: none; }
+    .nav-mobile a:hover { color: var(--text); }
+    @media (max-width: 600px) { .nav-links { display: none; } .nav-hamburger { display: flex; } }
+
+    .page-wrap { max-width: 580px; margin: 0 auto; padding: 8rem 2rem 5rem; }
+    .page-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.75rem; }
+    h1 { font-family: 'DM Serif Display', serif; font-size: 2.75rem; letter-spacing: -0.02em; margin-bottom: 0.75rem; }
+    .page-sub { color: var(--muted); font-weight: 300; margin-bottom: 3rem; font-size: 1.05rem; }
+
+    .form-group { margin-bottom: 1.5rem; }
+    label { display: block; font-size: 0.85rem; font-weight: 500; color: #c8c7d4; margin-bottom: 0.5rem; }
+    input, textarea, select {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 300;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(124,106,247,0.15);
+    }
+    textarea { min-height: 140px; resize: vertical; }
+    select option { background: var(--surface); }
+
+    .type-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .type-btn {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 0.85rem 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .type-btn input[type="radio"] { display: none; }
+
+    .type-btn:has(input:checked),
+    .type-btn.active {
+      border-color: var(--accent);
+      background: rgba(124,106,247,0.1);
+      color: var(--accent2);
+    }
+
+    .type-icon { font-size: 1.3rem; display: block; margin-bottom: 0.3rem; }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 0.5rem;
+      box-shadow: 0 0 30px rgba(124,106,247,0.25);
+    }
+    .btn-submit:hover { background: var(--accent2); transform: translateY(-1px); }
+    .btn-submit:active { transform: translateY(0); }
+
+    .form-note { font-size: 0.8rem; color: var(--muted); margin-top: 1rem; text-align: center; font-weight: 300; }
+
+    footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 2rem; border-top: 1px solid var(--border); margin-top: 4rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="nav-logo" href="/">Budgy</a>
+    <ul class="nav-links">
+      <li><a href="/#features">Features</a></li>
+      <li><a href="feedback.html">Feedback</a></li>
+      <li><a href="privacy.html">Privacy</a></li>
+      <li><a href="terms.html">Terms</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="nav-mobile" id="nav-mobile">
+    <a href="/#features">Features</a>
+    <a href="feedback.html">Feedback</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+  </div>
+  <script>
+    const btn = document.getElementById('hamburger');
+    const menu = document.getElementById('nav-mobile');
+    btn.addEventListener('click', () => { btn.classList.toggle('open'); menu.classList.toggle('open'); });
+  </script>
+
+  <div class="page-wrap">
+    <div class="page-label">Get in touch</div>
+    <h1>Share your feedback</h1>
+    <p class="page-sub">Found a bug, have an idea, or just want to say hi? We read everything and appreciate every message.</p>
+
+    <form name="feedback" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks.html">
+      <!-- Netlify bot field -->
+      <input type="hidden" name="form-name" value="feedback" />
+      <p style="display:none;"><label>Don't fill this out: <input name="bot-field" /></label></p>
+
+      <div class="form-group">
+        <label>Type of feedback</label>
+        <div class="type-grid">
+          <label class="type-btn">
+            <input type="radio" name="type" value="Bug Report" />
+            <span class="type-icon">🐛</span>
+            Bug Report
+          </label>
+          <label class="type-btn">
+            <input type="radio" name="type" value="Feature Request" />
+            <span class="type-icon">💡</span>
+            Feature Request
+          </label>
+          <label class="type-btn">
+            <input type="radio" name="type" value="General" checked />
+            <span class="type-icon">💬</span>
+            General
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="name">Your name <span style="color:var(--muted);font-weight:300">(optional)</span></label>
+        <input type="text" id="name" name="name" placeholder="Jane Smith" autocomplete="name" />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email address <span style="color:var(--muted);font-weight:300">(optional, if you'd like a reply)</span></label>
+        <input type="email" id="email" name="email" placeholder="jane@example.com" autocomplete="email" />
+      </div>
+
+      <div class="form-group">
+        <label for="message">Your message <span style="color:#e85757">*</span></label>
+        <textarea id="message" name="message" placeholder="Tell us what's on your mind..." required></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit">Send Feedback →</button>
+      <p class="form-note">Your feedback goes directly to the developer. We don't share your info with anyone.</p>
+    </form>
+  </div>
+
+  <footer>
+    <p><a href="/">Budgy</a> &nbsp;·&nbsp; <a href="privacy.html">Privacy</a> &nbsp;·&nbsp; <a href="terms.html">Terms</a> &nbsp;·&nbsp; <a href="feedback.html">Feedback</a></p>
+  </footer>
+</body>
+</html>

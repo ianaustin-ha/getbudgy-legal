@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Budgy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0f; --bg2: #111118; --surface: #16161f;
+      --border: rgba(255,255,255,0.07); --text: #f0eff5;
+      --muted: #7a7990; --accent: #7c6af7; --accent2: #a594f9;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 2rem;
+      background: rgba(10,10,15,0.85); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: var(--text); text-decoration: none; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.25s; transform-origin: center; }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .nav-mobile { display: none; position: fixed; top: 61px; left: 0; right: 0; background: rgba(10,10,15,0.97); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 1.5rem 2rem 2rem; z-index: 99; flex-direction: column; }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a { color: var(--muted); text-decoration: none; font-size: 1.1rem; padding: 0.9rem 0; border-bottom: 1px solid var(--border); transition: color 0.2s; }
+    .nav-mobile a:last-child { border-bottom: none; }
+    .nav-mobile a:hover { color: var(--text); }
+    @media (max-width: 600px) { .nav-links { display: none; } .nav-hamburger { display: flex; } }
+
+    .page-wrap { max-width: 720px; margin: 0 auto; padding: 8rem 2rem 5rem; }
+    .page-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent2); margin-bottom: 0.75rem; }
+    h1 { font-family: 'DM Serif Display', serif; font-size: 2.75rem; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+    .updated { color: var(--muted); font-size: 0.85rem; margin-bottom: 3rem; }
+    h2 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin: 2.5rem 0 0.75rem; }
+    p { color: #c8c7d4; font-weight: 300; margin-bottom: 1rem; }
+    ul { color: #c8c7d4; font-weight: 300; padding-left: 1.5rem; margin-bottom: 1rem; }
+    ul li { margin-bottom: 0.4rem; }
+    a { color: var(--accent2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .highlight-box {
+      background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+      border-radius: 10px; padding: 1.25rem 1.5rem; margin: 2rem 0;
+    }
+    .highlight-box p { margin: 0; }
+    footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 2rem; border-top: 1px solid var(--border); margin-top: 4rem; }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="nav-logo" href="/">Budgy</a>
+    <ul class="nav-links">
+      <li><a href="/#features">Features</a></li>
+      <li><a href="feedback.html">Feedback</a></li>
+      <li><a href="privacy.html">Privacy</a></li>
+      <li><a href="terms.html">Terms</a></li>
+    </ul>
+    <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="nav-mobile" id="nav-mobile">
+    <a href="/#features">Features</a>
+    <a href="feedback.html">Feedback</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+  </div>
+  <script>
+    const btn = document.getElementById('hamburger');
+    const menu = document.getElementById('nav-mobile');
+    btn.addEventListener('click', () => { btn.classList.toggle('open'); menu.classList.toggle('open'); });
+  </script>
+
+  <div class="page-wrap">
+    <div class="page-label">Legal</div>
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: February 22, 2026</p>
+
+    <div class="highlight-box">
+      <p>Budgy is built with privacy at its core. We do not collect, sell, or share your personal or financial data. Your information stays on your device and your private iCloud account.</p>
+    </div>
+
+    <h2>1. Who We Are</h2>
+    <p>Budgy ("we," "us," or "our") is a personal finance application for iOS developed by an independent developer. You can reach us at <a href="mailto:hello@getbudgy.app">hello@getbudgy.app</a>.</p>
+
+    <h2>2. Information We Collect</h2>
+    <p>We do not collect any personal information through Budgy. The app does not have a backend server, does not require account creation, and does not transmit your data to us.</p>
+    <p>All data you enter into Budgy — including transactions, budgets, categories, and goals — is stored exclusively:</p>
+    <ul>
+      <li><strong>Locally</strong> on your device using Apple's SwiftData framework</li>
+      <li><strong>In your personal iCloud account</strong> if iCloud sync is enabled, governed by Apple's iCloud Privacy Policy</li>
+    </ul>
+
+    <h2>3. iCloud Sync</h2>
+    <p>If you enable iCloud sync, your Budgy data is synced across your Apple devices via Apple's CloudKit service. This data is stored in your personal iCloud account and is subject to <a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">Apple's Privacy Policy</a>. We have no access to this data.</p>
+
+    <h2>4. Analytics and Tracking</h2>
+    <p>Budgy contains no third-party analytics, advertising SDKs, tracking pixels, or crash reporting tools. We do not monitor how you use the app.</p>
+
+    <h2>5. In-App Purchases</h2>
+    <p>Budgy may offer optional premium features via in-app purchases. All purchase transactions are processed by Apple through the App Store. We do not receive or store your payment information. Purchase records are managed by Apple and subject to <a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">Apple's Privacy Policy</a>.</p>
+
+    <h2>6. Feedback and Support</h2>
+    <p>If you contact us via the feedback form or email, you may voluntarily provide your name and email address so we can respond. This information is used solely to respond to your inquiry and is not shared with any third party.</p>
+
+    <h2>7. Children's Privacy</h2>
+    <p>Budgy is not directed at children under the age of 13. We do not knowingly collect any personal information from children. If you believe a child has submitted information to us, please contact us and we will delete it promptly.</p>
+
+    <h2>8. Data Security</h2>
+    <p>Because your data is stored locally on your device and optionally in your personal iCloud account, the security of your data is protected by Apple's device security and iCloud encryption. We recommend keeping your device passcode and Face ID enabled.</p>
+
+    <h2>9. Your Rights</h2>
+    <p>Since we do not collect your personal data, there is no data for us to provide, correct, or delete on our end. If you wish to delete your Budgy data, you can do so directly within the app or by uninstalling it. iCloud data can be managed through your iCloud account settings.</p>
+
+    <h2>10. Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. If we make material changes, we will update the "Last updated" date at the top of this page. Continued use of Budgy after any changes constitutes your acceptance of the updated policy.</p>
+
+    <h2>11. Contact Us</h2>
+    <p>If you have questions about this Privacy Policy, please contact us at <a href="mailto:hello@getbudgy.app">hello@getbudgy.app</a> or use our <a href="feedback.html">feedback form</a>.</p>
+  </div>
+
+  <footer>
+    <p><a href="/">Budgy</a> &nbsp;·&nbsp; <a href="privacy.html">Privacy</a> &nbsp;·&nbsp; <a href="terms.html">Terms</a> &nbsp;·&nbsp; <a href="feedback.html">Feedback</a></p>
+  </footer>
+</body>
+</html>
