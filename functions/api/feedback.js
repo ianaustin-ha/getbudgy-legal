@@ -1,9 +1,26 @@
 // functions/api/feedback.js
 
-export async function onRequestPost({ request, env }) {
+export async function onRequest(context) {
+  const { request } = context;
+
+  // ✅ So you can verify in the browser
+  if (request.method === "GET") {
+    return new Response("OK: /api/feedback is live. Send POST from the form.", {
+      status: 200,
+      headers: { "content-type": "text/plain; charset=utf-8" },
+    });
+  }
+
+  if (request.method !== "POST") {
+    return new Response("Method Not Allowed", { status: 405 });
+  }
+
+  return handlePost(context);
+}
+
+async function handlePost({ request, env }) {
   const ct = request.headers.get("content-type") || "";
 
-  // Accept standard HTML form posts
   let form;
   if (
     ct.includes("application/x-www-form-urlencoded") ||
@@ -19,15 +36,13 @@ export async function onRequestPost({ request, env }) {
   const email = (form.get("email") || "").toString().slice(0, 200);
   const message = (form.get("message") || "").toString().slice(0, 5000);
 
-  // Honeypot (hidden field in HTML named "company")
+  // Honeypot
   const company = (form.get("company") || "").toString();
   if (company.trim().length) {
     return Response.redirect(new URL("/thanks.html", request.url).toString(), 303);
   }
 
-  if (!message.trim()) {
-    return new Response("Message required", { status: 400 });
-  }
+  if (!message.trim()) return new Response("Message required", { status: 400 });
 
   if (!env.MC_API_KEY || !env.FEEDBACK_TO_EMAIL || !env.FEEDBACK_FROM_EMAIL) {
     return new Response("Server not configured", { status: 500 });
@@ -53,18 +68,13 @@ IP: ${ip}
 UA: ${ua}
 `;
 
-  // MailChannels Email API payload
   const payload = {
     personalizations: [{ to: [{ email: env.FEEDBACK_TO_EMAIL }] }],
-    from: {
-      email: env.FEEDBACK_FROM_EMAIL,
-      name: env.FEEDBACK_FROM_NAME || "Budgy Feedback",
-    },
+    from: { email: env.FEEDBACK_FROM_EMAIL, name: env.FEEDBACK_FROM_NAME || "Budgy Feedback" },
     subject,
     content: [{ type: "text/plain", value: text }],
   };
 
-  // Only set reply_to if user provided an email
   if (email && email.includes("@")) {
     payload.reply_to = { email };
   }
