@@ -115,6 +115,7 @@
       padding: 0.9rem 0;
       border-bottom: 1px solid var(--border);
     }
+    .nav-mobile a:last-child { border-bottom: none; }
 
     @media (max-width: 600px) {
       .nav-links { display: none; }
@@ -160,10 +161,12 @@
     .hero-sub {
       font-size: 1.1rem;
       color: var(--muted);
-      max-width: 480px;
+      max-width: 520px;
       margin-bottom: 2.5rem;
       font-weight: 300;
     }
+
+    .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
 
     .btn-primary {
       display: inline-flex;
@@ -195,7 +198,69 @@
       border-radius: 12px;
       font-size: 0.95rem;
       border: 1px solid var(--border);
+      transition: color 0.2s, border-color 0.2s;
     }
+    .btn-secondary:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
+
+    /* FEATURES */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 2rem;
+    }
+
+    .section {
+      padding: 6rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ✅ prevents the fixed nav from hiding the section when jumping to #features */
+    #features { scroll-margin-top: 110px; }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      line-height: 1.1;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      max-width: 520px;
+      font-weight: 300;
+      font-size: 1.05rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-top: 3rem;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature-card:hover { border-color: rgba(124,106,247,0.3); transform: translateY(-3px); }
+
+    .feature-icon { font-size: 1.6rem; margin-bottom: 0.75rem; }
+    .feature-title { font-weight: 500; font-size: 1.05rem; margin-bottom: 0.4rem; }
+    .feature-desc { color: var(--muted); font-size: 0.92rem; font-weight: 300; }
 
     footer {
       padding: 3rem 2rem;
@@ -206,6 +271,7 @@
     }
 
     footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
   </style>
 </head>
 
@@ -221,24 +287,33 @@
       <li><a href="/terms">Terms</a></li>
     </ul>
 
-    <button class="nav-hamburger" id="hamburger">
+    <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
       <span></span><span></span><span></span>
     </button>
   </nav>
 
   <div class="nav-mobile" id="nav-mobile">
-    <a href="#features">Features</a>
-    <a href="/feedback">Feedback</a>
-    <a href="/privacy">Privacy</a>
-    <a href="/terms">Terms</a>
+    <a href="#features" class="mobile-link">Features</a>
+    <a href="/feedback" class="mobile-link">Feedback</a>
+    <a href="/privacy" class="mobile-link">Privacy</a>
+    <a href="/terms" class="mobile-link">Terms</a>
   </div>
 
   <script>
     const btn = document.getElementById('hamburger');
     const menu = document.getElementById('nav-mobile');
+
     btn.addEventListener('click', () => {
       btn.classList.toggle('open');
       menu.classList.toggle('open');
+    });
+
+    // Close mobile menu after tapping a link
+    document.querySelectorAll('.mobile-link').forEach(a => {
+      a.addEventListener('click', () => {
+        btn.classList.remove('open');
+        menu.classList.remove('open');
+      });
     });
   </script>
 
@@ -252,9 +327,55 @@
       Track spending, set goals, and build better habits — all on your device.
     </p>
 
-    <div>
-      <a class="btn-primary" href="#">Download on App Store</a>
+    <div class="hero-ctas">
+      <a class="btn-primary" href="#" aria-label="Download on the App Store">Download on App Store</a>
       <a class="btn-secondary" href="/feedback">Send Feedback</a>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <section class="section" id="features">
+    <div class="section-label">What's inside</div>
+    <h2 class="section-title">Everything you need,<br />nothing you don't</h2>
+    <p class="section-sub">Budgy keeps it simple so you can focus on what matters — your financial wellbeing.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">💳</div>
+        <div class="feature-title">Transaction Tracking</div>
+        <p class="feature-desc">Log expenses and income quickly. Organize by category, add notes, and see where your money goes.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-title">Savings Goals</div>
+        <p class="feature-desc">Set goals, track progress, and stay motivated—vacations, emergency funds, and more.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <div class="feature-title">Recurring Transactions</div>
+        <p class="feature-desc">Add subscriptions and bills once. Budgy helps you keep track so nothing slips through.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Insights</div>
+        <p class="feature-desc">Clean breakdowns that make your spending patterns clear at a glance.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">☁️</div>
+        <div class="feature-title">iCloud Sync</div>
+        <p class="feature-desc">Sync privately across your Apple devices via iCloud. No accounts required.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-title">Privacy First</div>
+        <p class="feature-desc">No ads. No tracking. No selling your data. Your finances stay yours.</p>
+      </div>
     </div>
   </section>
 
