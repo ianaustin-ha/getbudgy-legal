@@ -64,7 +64,6 @@
       font-size: 0.9rem;
       transition: color 0.2s;
     }
-
     .nav-links a:hover { color: var(--text); }
 
     .nav-hamburger {
@@ -84,7 +83,12 @@
       background: var(--text);
       border-radius: 2px;
       transition: all 0.25s;
+      transform-origin: center;
     }
+
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
     .nav-mobile {
       display: none;
@@ -106,7 +110,11 @@
       font-size: 1.1rem;
       padding: 0.9rem 0;
       border-bottom: 1px solid var(--border);
+      transition: color 0.2s;
     }
+
+    .nav-mobile a:last-child { border-bottom: none; }
+    .nav-mobile a:hover { color: var(--text); }
 
     @media (max-width: 600px) {
       .nav-links { display: none; }
@@ -195,11 +203,31 @@
 
     <ul class="nav-links">
       <li><a href="/#features">Features</a></li>
-      <li><a href="/feedback">Feedback</a></li>
-      <li><a href="/privacy">Privacy</a></li>
-      <li><a href="/terms">Terms</a></li>
+      <li><a href="/feedback/">Feedback</a></li>
+      <li><a href="/privacy/">Privacy</a></li>
+      <li><a href="/terms/">Terms</a></li>
     </ul>
+
+    <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+
+  <div class="nav-mobile" id="nav-mobile">
+    <a href="/#features">Features</a>
+    <a href="/feedback/">Feedback</a>
+    <a href="/privacy/">Privacy</a>
+    <a href="/terms/">Terms</a>
+  </div>
+
+  <script>
+    const btn = document.getElementById('hamburger');
+    const menu = document.getElementById('nav-mobile');
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('open');
+      menu.classList.toggle('open');
+    });
+  </script>
 
   <div class="page-wrap">
     <div class="page-label">Legal</div>
@@ -226,7 +254,7 @@
     <p>All purchases are processed securely by Apple through the App Store. We do not receive or store payment information.</p>
 
     <h2>6. Contact & Feedback</h2>
-    <p>If you contact us via email or our <a href="/feedback">feedback form</a>, we may receive your name and email address solely to respond to your inquiry.</p>
+    <p>If you contact us via email or our <a href="/feedback/">feedback form</a>, we may receive your name and email address solely to respond to your inquiry.</p>
 
     <h2>7. Changes</h2>
     <p>We may update this Privacy Policy from time to time. Updates will be reflected in the “Last updated” date above.</p>
@@ -238,9 +266,9 @@
   <footer>
     <p>
       <a href="/">Budgy</a> ·
-      <a href="/privacy">Privacy</a> ·
-      <a href="/terms">Terms</a> ·
-      <a href="/feedback">Feedback</a>
+      <a href="/privacy/">Privacy</a> ·
+      <a href="/terms/">Terms</a> ·
+      <a href="/feedback/">Feedback</a>
     </p>
     <p>&copy; 2026 Budgy. All rights reserved.</p>
   </footer>
