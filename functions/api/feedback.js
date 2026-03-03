@@ -109,12 +109,27 @@ UA: ${ua}
 });
 
 if (!res.ok) {
-  const body = await res.text().catch(() => "");
+  const bodyText = await res.text().catch(() => "");
+  const requestId =
+    res.headers.get("x-request-id") ||
+    res.headers.get("cf-ray") ||
+    "none";
+
   return new Response(
-    `Email send failed: ${res.status}\n\n${body}`,
-    { status: 200, headers: { "content-type": "text/plain" } }
+    `Email send failed
+Status: ${res.status}
+Request ID: ${requestId}
+
+${bodyText}`,
+    {
+      status: 200,
+      headers: { "content-type": "text/plain; charset=utf-8" },
+    }
   );
 }
 
-return Response.redirect(new URL("/thanks/", request.url).toString(), 303);
+return Response.redirect(
+  new URL("/thanks/", request.url).toString(),
+  303
+);
 }
