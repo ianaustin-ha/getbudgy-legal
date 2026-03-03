@@ -3,6 +3,7 @@
 export async function onRequest(context) {
   const { request } = context;
 
+  // Quick health check in browser
   if (request.method === "GET") {
     return new Response("OK: /api/feedback is live. Send POST from the form.", {
       status: 200,
@@ -14,7 +15,12 @@ export async function onRequest(context) {
     return new Response("Method Not Allowed", { status: 405 });
   }
 
-  return handlePost(context);
+  try {
+    return await handlePost(context);
+  } catch (err) {
+    // If anything throws, we return a real response (prevents Cloudflare 502 page)
+    return new Response(`Function crashed: ${err?.message || err}`, { status: 500 });
+  }
 }
 
 async function handlePost({ request, env }) {
@@ -32,7 +38,7 @@ async function handlePost({ request, env }) {
   const email = (form.get("email") || "").toString().slice(0, 200);
   const message = (form.get("message") || "").toString().slice(0, 5000);
 
-  // Honeypot
+  // Honeypot (spam protection)
   const company = (form.get("company") || "").toString();
   if (company.trim().length) {
     return Response.redirect(new URL("/thanks/", request.url).toString(), 303);
@@ -40,7 +46,7 @@ async function handlePost({ request, env }) {
 
   if (!message.trim()) return new Response("Message required", { status: 400 });
 
-  // ✅ These are the only required env vars
+  // Only require these env vars
   if (!env.FEEDBACK_TO_EMAIL || !env.FEEDBACK_FROM_EMAIL) {
     return new Response("Server not configured (missing FEEDBACK_TO_EMAIL / FEEDBACK_FROM_EMAIL)", {
       status: 500,
@@ -67,6 +73,7 @@ IP: ${ip}
 UA: ${ua}
 `;
 
+  // MailChannels payload
   const payload = {
     personalizations: [{ to: [{ email: env.FEEDBACK_TO_EMAIL }] }],
     from: {
@@ -75,28 +82,22 @@ UA: ${ua}
     },
     subject,
     content: [{ type: "text/plain", value: text }],
-    headers: {
-      "X-Feedback-IP": ip,
-    },
   };
 
+  // Set reply-to if provided
   if (email && email.includes("@")) {
     payload.reply_to = { email };
   }
 
-  // ✅ MailChannels send endpoint (no API key)
   const res = await fetch("https://api.mailchannels.net/tx/v1/send", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(payload),
   });
 
-  const body = await res.text().catch(() => "");
-  console.log("MailChannels status:", res.status);
-  console.log("MailChannels response:", body);
-
   if (!res.ok) {
-    return new Response(`Email send failed: ${res.status}\n${body}`, { status: 502 });
+    const errText = await res.text().catch(() => "");
+    return new Response(`Email send failed: ${res.status}\n${errText}`, { status: 502 });
   }
 
   return Response.redirect(new URL("/thanks/", request.url).toString(), 303);
