@@ -1,8 +1,4 @@
 // functions/api/feedback.js
-// ✅ Cloudflare Pages Function: /api/feedback
-// ✅ GET = health check
-// ✅ POST = send email via MailChannels
-// ✅ Debug mode: /api/feedback?debug=1 returns MailChannels error text as 200 (so CF won't mask it)
 
 export async function onRequest(context) {
   const { request } = context;
@@ -22,7 +18,6 @@ export async function onRequest(context) {
   try {
     return await handlePost(context);
   } catch (err) {
-    // Prevent Cloudflare's branded 502 page by returning a real response
     return new Response(`Function crashed: ${err?.message || String(err)}`, {
       status: 500,
       headers: { "content-type": "text/plain; charset=utf-8" },
@@ -31,22 +26,17 @@ export async function onRequest(context) {
 }
 
 async function handlePost({ request, env }) {
-  const url = new URL(request.url);
-  const debug = url.searchParams.get("debug") === "1";
-
   const ct = request.headers.get("content-type") || "";
-  let form;
 
   if (
-    ct.includes("application/x-www-form-urlencoded") ||
-    ct.includes("multipart/form-data")
+    !ct.includes("application/x-www-form-urlencoded") &&
+    !ct.includes("multipart/form-data")
   ) {
-    form = await request.formData();
-  } else {
     return new Response("Unsupported content type", { status: 415 });
   }
 
-  // Fields
+  const form = await request.formData();
+
   const type = (form.get("type") || "General").toString().slice(0, 40);
   const name = (form.get("name") || "").toString().slice(0, 120);
   const email = (form.get("email") || "").toString().slice(0, 200);
@@ -58,28 +48,25 @@ async function handlePost({ request, env }) {
     return Response.redirect(new URL("/thanks/", request.url).toString(), 303);
   }
 
-  if (!message.trim()) {
-    return new Response("Message required", { status: 400 });
+  if (!message.trim()) return new Response("Message required", { status: 400 });
+
+  // ✅ Required env vars
+  if (!env.RESEND_API_KEY) {
+    return new Response("Server not configured (missing RESEND_API_KEY)", { status: 500 });
   }
-
-  // Env vars required
-  const TO = (env.FEEDBACK_TO_EMAIL || "").trim();
-  const FROM = (env.FEEDBACK_FROM_EMAIL || "").trim();
-  const FROM_NAME = (env.FEEDBACK_FROM_NAME || "Budgy Feedback").trim();
-
-  if (!TO || !FROM) {
+  if (!env.FEEDBACK_TO_EMAIL || !env.FEEDBACK_FROM_EMAIL) {
     return new Response(
       "Server not configured (missing FEEDBACK_TO_EMAIL / FEEDBACK_FROM_EMAIL)",
       { status: 500 }
     );
   }
 
-  // Metadata
   const ip = request.headers.get("cf-connecting-ip") || "unknown";
   const ua = request.headers.get("user-agent") || "unknown";
   const now = new Date().toISOString();
 
   const subject = `Budgy Feedback: ${type}`;
+
   const text = `New Budgy feedback
 
 Type: ${type}
@@ -95,51 +82,37 @@ IP: ${ip}
 UA: ${ua}
 `;
 
-  // MailChannels payload
+  // Resend expects:
+  // from: "Name <email@domain.com>" OR just "email@domain.com"
+  const fromName = (env.FEEDBACK_FROM_NAME || "Budgy Feedback").toString();
+  const from = `${fromName} <${env.FEEDBACK_FROM_EMAIL}>`;
+
   const payload = {
-    personalizations: [{ to: [{ email: TO }] }],
-    from: { email: FROM, name: FROM_NAME },
+    from,
+    to: [env.FEEDBACK_TO_EMAIL],
     subject,
-    content: [{ type: "text/plain", value: text }],
-    headers: {
-      "X-Feedback-IP": ip,
-      "X-Feedback-UA": ua,
-    },
+    text,
+    // If user entered an email, make Reply-To their email
+    reply_to: email && email.includes("@") ? email : undefined,
+    // Optional: set a tag for filtering in Resend
+    tags: [{ name: "source", value: "website-feedback" }],
   };
 
-  // Reply-to if provided
-  if (email && email.includes("@")) {
-    payload.reply_to = { email };
-  }
-
-  const res = await fetch("https://api.mailchannels.net/tx/v1/send", {
+  // Resend API
+  const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: {
+      authorization: `Bearer ${env.RESEND_API_KEY}`,
+      "content-type": "application/json",
+    },
     body: JSON.stringify(payload),
   });
 
-  const bodyText = await res.text().catch(() => "");
+  const body = await res.text().catch(() => "");
 
-  // ✅ If MailChannels fails, show the real error in debug mode without CF masking it
   if (!res.ok) {
-    if (debug) {
-      return new Response(
-        `MailChannels failed\nStatus: ${res.status}\n\n${bodyText}`,
-        {
-          status: 200,
-          headers: { "content-type": "text/plain; charset=utf-8" },
-        }
-      );
-    }
-
-    // Return 500 (not 502) to avoid CF "Bad gateway" branding as often
-    return new Response("Email send failed", { status: 500 });
-  }
-
-  // Optional: show MailChannels response in debug mode
-  if (debug) {
-    return new Response(`MailChannels OK\n\n${bodyText || "(no body)"}`, {
-      status: 200,
+    return new Response(`Email send failed: ${res.status}\n${body}`, {
+      status: 502,
       headers: { "content-type": "text/plain; charset=utf-8" },
     });
   }
