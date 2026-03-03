@@ -40,8 +40,11 @@ async function handlePost({ request, env }) {
 
   if (!message.trim()) return new Response("Message required", { status: 400 });
 
-  if (!env.RESEND_API_KEY || !env.FEEDBACK_TO_EMAIL || !env.FEEDBACK_FROM_EMAIL) {
-    return new Response("Server not configured", { status: 500 });
+  // ✅ These are the only required env vars
+  if (!env.FEEDBACK_TO_EMAIL || !env.FEEDBACK_FROM_EMAIL) {
+    return new Response("Server not configured (missing FEEDBACK_TO_EMAIL / FEEDBACK_FROM_EMAIL)", {
+      status: 500,
+    });
   }
 
   const ip = request.headers.get("cf-connecting-ip") || "unknown";
@@ -49,7 +52,6 @@ async function handlePost({ request, env }) {
   const now = new Date().toISOString();
 
   const subject = `Budgy Feedback: ${type}`;
-
   const text = `New Budgy feedback
 
 Type: ${type}
@@ -66,25 +68,35 @@ UA: ${ua}
 `;
 
   const payload = {
-    from: `Budgy Feedback <${env.FEEDBACK_FROM_EMAIL}>`,
-    to: [env.FEEDBACK_TO_EMAIL],
+    personalizations: [{ to: [{ email: env.FEEDBACK_TO_EMAIL }] }],
+    from: {
+      email: env.FEEDBACK_FROM_EMAIL,
+      name: env.FEEDBACK_FROM_NAME || "Budgy Feedback",
+    },
     subject,
-    text,
-    reply_to: email && email.includes("@") ? email : undefined,
+    content: [{ type: "text/plain", value: text }],
+    headers: {
+      "X-Feedback-IP": ip,
+    },
   };
 
-  const res = await fetch("https://api.resend.com/emails", {
+  if (email && email.includes("@")) {
+    payload.reply_to = { email };
+  }
+
+  // ✅ MailChannels send endpoint (no API key)
+  const res = await fetch("https://api.mailchannels.net/tx/v1/send", {
     method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${env.RESEND_API_KEY}`,
-    },
+    headers: { "content-type": "application/json" },
     body: JSON.stringify(payload),
   });
 
+  const body = await res.text().catch(() => "");
+  console.log("MailChannels status:", res.status);
+  console.log("MailChannels response:", body);
+
   if (!res.ok) {
-    const err = await res.text().catch(() => "");
-    return new Response(`Email send failed: ${res.status}\n${err}`, { status: 502 });
+    return new Response(`Email send failed: ${res.status}\n${body}`, { status: 502 });
   }
 
   return Response.redirect(new URL("/thanks/", request.url).toString(), 303);
