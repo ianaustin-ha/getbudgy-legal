@@ -100,22 +100,21 @@ UA: ${ua}
 
   // Resend API
   const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${env.RESEND_API_KEY}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
+  method: "POST",
+  headers: {
+    authorization: `Bearer ${env.RESEND_API_KEY}`,
+    "content-type": "application/json",
+  },
+  body: JSON.stringify(payload),
+});
 
+if (!res.ok) {
   const body = await res.text().catch(() => "");
+  return new Response(
+    `Email send failed: ${res.status}\n\n${body}`,
+    { status: 200, headers: { "content-type": "text/plain" } }
+  );
+}
 
-  if (!res.ok) {
-    return new Response(`Email send failed: ${res.status}\n${body}`, {
-      status: 502,
-      headers: { "content-type": "text/plain; charset=utf-8" },
-    });
-  }
-
-  return Response.redirect(new URL("/thanks/", request.url).toString(), 303);
+return Response.redirect(new URL("/thanks/", request.url).toString(), 303);
 }
